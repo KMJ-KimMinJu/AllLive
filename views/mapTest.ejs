@@ -65,6 +65,27 @@
       });
     }
 
+    //address에 주소를 위도경도 변환할 주소를 넣기
+    async function getLatLng(address) {
+    const url = `http://localhost:3001/api/geocode?address=${encodeURIComponent(address)}`;
+
+    try {
+        const response = await fetch(url);
+        const data = await response.json();
+        
+        if (data.addresses && data.addresses.length > 0) {s
+            const lat = data.addresses[0].y;
+            const lng = data.addresses[0].x;
+            return { lat, lng };
+        } else {
+            console.log("주소를 찾을 수 없습니다.");
+            return null;
+        }
+    } catch (error) {
+        console.error("Geocoding API 오류:", error);
+        return null;
+    }
+}
 
 
   </script>
