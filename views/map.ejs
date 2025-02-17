@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All-Live올리브</title>
+    <link rel="stylesheet" href="./map.css">
+</head>
+<body>
+    <header class="header">
+        <nav class="main-nav">
+            <div class="logo">
+                <a href="/">
+                    <img src="/images/logo.png" alt="Logo" width="55" height="55">
+                </a>
+            </div>
+            <ul class="nav-items main-menu">
+                <li class="nav-item"><a href="/artist">올리브 정책</a></li>
+                <li class="nav-item"><a href="https://www.designdb.com/usr/upload/board/zboardphotogallery176/20241204111727914_3119.0.pdf" target="_blank">올리브 신청</a></li>
+                <li class="nav-item"><a href="/map">올리브 위치</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+      <div class="all-select">
+        <div class="select-place">
+          <h2>부산시</h2>
+          <h2>구 선택</h2>
+          <select id="district-select">
+            <option value="강서구">강서구</option>
+            <option value="금정구">금정구</option>
+            <option value="기장군">기장군</option>
+            <option value="남구">남구</option>
+            <option value="동구">동구</option>
+            <option value="동래구">동래구</option>
+            <option value="부산진구">부산진구</option>
+            <option value="북구">북구</option>
+            <option value="사상구">사상구</option>
+            <option value="사하구">사하구</option>
+            <option value="서구">서구</option>
+            <option value="수영구">수영구</option>
+            <option value="연제구">연제구</option>
+            <option value="중구">중구</option>
+            <option value="해운대구">해운대구</option>
+          </select>
+        </div>
+        <div id="map" class="map-div">
+          <script type="text/javascript"
+            src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpClientId=<%= process.env.MAPCLIENTID %>&callback=initMap"></script>
+          <script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
+        </div>
+      </div>
+    </main>
+
+    <footer>
+            <p>"여기 부산 로고 넣기!!!!!!!!!"올리도 내 자부심! 올-리브(ALL-Live)</p>
+    </footer>
+
+    <script>
+        let map;
+    
+        // 가져오기 성공
+        function getSuccess(position) {
+          // 위도
+          const lat = position.coords.latitude;
+          // 경도
+          const lng = position.coords.longitude;
+          // 위도 경도 오차(m)
+          const accuracy = Math.floor(position.coords.accuracy);
+    
+          createMap(lat, lng);
+          createMyMark(lat, lng);
+    
+          // fetchDummyData();
+          fetchDetailDummyData("남구");
+    
+        }
+    
+        // 가지오기 실패(거부)
+        function getError() {
+          alert('Geolocation Error');
+        }
+    
+    
+        // 현재 위치 가져오기
+        navigator.geolocation.getCurrentPosition(getSuccess, getError, {
+          enableHighAccuracy: true, // 고정밀 GPS 사용
+          timeout: 10000, // 최대 대기 시간 (10초)
+          maximumAge: 0 // 캐시된 위치 정보 사용 안 함
+        });
+    
+        // 맵 생성
+        function createMap(lat, lng) {
+          var mapOptions = {
+            center: new naver.maps.LatLng(lat, lng),
+            zoom: 10
+          };
+    
+          map = new naver.maps.Map('map', mapOptions);
+        }
+    
+        // 지도에 표시하는 마커 생성 (일반)
+        function createMark(lat, lng) {
+          let marker = new naver.maps.Marker({
+            map: map,
+            position: new naver.maps.LatLng(lat, lng)
+          });
+          return marker;
+        }
+    
+        // 지도에 표시하는 마커 생성 (내 위치)
+        function createMyMark(lat, lng) {
+          let marker = new naver.maps.Marker({
+            map: map,
+            position: new naver.maps.LatLng(lat, lng),
+            icon: {
+                content: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="35" viewBox="0 0 24 35" fill="none">
+                              <path fill="red" d="M12 0C5.37 0 0 5.37 0 12c0 7.5 12 23 12 23s12-15.5 12-23C24 5.37 18.63 0 12 0z"/>
+                              <circle cx="12" cy="12" r="5" fill="white"/>
+                          </svg>`,
+                anchor: new naver.maps.Point(12, 34)
+            }
+          });
+          return marker;
+        }
+    
+        //address에 위도경도 변환할 주소를 넣기
+        async function getLatLng(address) {
+          const url = `http://localhost:3001/api/geocode?address=${encodeURIComponent(address)}`;
+    
+          try {
+            const response = await fetch(url);
+            const data = await response.json();
+    
+            console.log(data);
+    
+            if (data.addresses && data.addresses.length > 0) {
+              const lat = data.addresses[0].y;
+              const lng = data.addresses[0].x;
+              console.log(`위도: ${lat}, 경도: ${lng}`);
+              return { lat, lng };
+            } else {
+              console.log("주소를 찾을 수 없습니다.");
+              return null;
+            }
+          } catch (error) {
+            console.error("Geocoding API 오류:", error);
+            return null;
+          }
+        }
+    
+        // 마커
+        function createMarkUrl(marker, district, name) {
+          naver.maps.Event.addListener(marker, "click", function (e) {
+            let address = encodeURIComponent(district + " " + name);
+            console.log(address);
+            let url = `https://map.naver.com/p/search/${address}`;
+            window.open(url, "_blank"); // 새 탭에서 URL 열기
+          });
+        }
+    
+        // 전체 더미데이터 불러와서 마커 찍기
+        async function fetchDummyData() {
+          try {
+            let response = await $.ajax({
+              url: "/map/list",
+              type: "GET",
+              cache: false,
+              dataType: "json"
+            });
+    
+            for (let it of response) {
+              let district = it.district;
+              let name = it.name;
+    
+              try {
+                let latLngResult = await getLatLng(it.address);
+                let datalat = latLngResult.lat;
+                let datalng = latLngResult.lng;
+    
+                console.log(datalat + " " + datalng);
+    
+                let marker = createMark(datalat, datalng);
+    
+                createMarkUrl(marker, district, name);
+    
+              } catch (error) {
+                console.error("주소 변환 실패:", error);
+              }
+            }
+          } catch (error) {
+            console.error("AJAX 요청 실패:", error);
+          }
+        }
+    
+        // 특정 지역구 더미데이터 불러와서 마커 찍기
+        async function fetchDetailDummyData(district) {
+          try {
+            let response = await $.ajax({
+              url: `/map/list/detail?district=${encodeURIComponent(district)}`,
+              type: "GET",
+              cache: false,
+              dataType: "json"
+            });
+    
+            console.log(response);
+    
+            for (let it of response) {
+              let district = it.district;
+              let name = it.name;
+    
+              try {
+                let latLngResult = await getLatLng(it.address);
+                let datalat = latLngResult.lat;
+                let datalng = latLngResult.lng;
+    
+                console.log(`주소: ${it.address} → 위도: ${datalat}, 경도: ${datalng}`);
+    
+                let marker = createMark(datalat, datalng);
+    
+                createMarkUrl(marker, district, name);
+    
+    
+              } catch (error) {
+                console.error("위도·경도 변환 실패:", error);
+              }
+            }
+          } catch (error) {
+            console.error("AJAX 요청 실패:", error);
+          }
+        }
+    
+      </script>
+</div>
+</body>
+</html>

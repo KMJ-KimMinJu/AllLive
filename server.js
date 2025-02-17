@@ -5,6 +5,7 @@ const app = express();
 const dummyData = require('./dummyData.js');
 const port = 3001;
 const cors = require('cors');
+const fetch = require("node-fetch");
 
 require("dotenv").config(); // .env 파일 로드
 
@@ -12,9 +13,9 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
 // 정적 파일 제공
-app.use(express.static(path.join(__dirname)));
+app.use(express.static("views"));
 
-
+app.use('/images', express.static(path.join(__dirname, 'images')));
 // 서버 실행
 app.listen(port, () => {
     console.log(`서버가 실행 중입니다. http://localhost:${port}`);
@@ -22,8 +23,16 @@ app.listen(port, () => {
 
 app.set("view engine", "ejs"); // EJS 사용
 
+app.get("/", (req, res) => {
+    res.render('Main');
+});
+
+app.get("/artist", (req, res) => {
+    res.render('artist');
+});
+
 app.get("/map", (req, res) => {
-    res.render('mapTest', { MAPCLIENTID: process.env.MAPCLIENTID });
+    res.render('map', { MAPCLIENTID: process.env.MAPCLIENTID });
 });
 
 app.get("/map/list", (req, res) => {

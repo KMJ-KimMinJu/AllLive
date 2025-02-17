@@ -1,0 +1,266 @@
+/* Reset and base styles */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Noto Sans KR', sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background-color: #ffffff;
+    overflow-x: hidden; /* 페이지 전체에서 좌우 스크롤 막기 */
+}
+
+.header {
+    border-bottom: 1px solid #eee;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background-color: #fff;
+    z-index: 1000;
+    left: 0;
+    right: 0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: top 0.3s;
+}
+
+.header nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    /* padding: 1rem; */
+}
+
+.main-nav {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+}
+
+.logo a {
+    font-weight: bold;
+    text-decoration: none;
+    color: #000;
+    font-size: 1.2rem;
+    /* margin-right: 210px; */
+}
+
+.nav-items {
+    display: flex;
+    list-style: none;
+    margin-left: 3rem;
+    height: 100%;
+}
+
+.nav-item {
+    margin: 0 1rem;
+    height: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.nav-item > a {
+    text-decoration: none;
+    color: #333;
+    font-size: 1rem;
+    padding: 0.5rem;
+    margin-right: 4px;;
+}
+
+.nav-utils {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+/* Banner styles */
+.banner {
+    position: fixed;
+    top: 60px; /* Adjust based on your header height */
+    left: 0;
+    right: 0;
+    background-color: #007bff;
+    color: white;
+    text-align: center;
+    padding: 10px;
+    z-index: 999;
+    transition: top 0.3s;
+}
+.hero {
+    margin-top: 60px; /* 헤더 높이에 맞게 조정 */
+    height: 100vh; /* 뷰포트 높이만큼 설정 */
+    opacity: 0;
+    transition: opacity 2s ease-in;
+    background: url('/images/DynamicImage.png') no-repeat center center; /* 경로 수정 */
+    background-size: cover;
+    position: relative;
+    z-index: 1; /* z-index 추가 */
+}
+
+.hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.3); /* 오버레이 투명도 조정 */
+    z-index: 2; /* z-index 추가 */
+}
+
+.hero.visible {
+    opacity: 1;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 3; /* z-index 증가 */
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: white;
+}
+
+
+
+.hero h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+.hero p {
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+}
+
+/*버튼모양*/
+.custom-btn {
+    width: 150px;
+    height: 50px;
+    padding: 10px 25px;
+    border: 2px solid #000;
+    font-family: 'Lato', sans-serif;
+    font-weight: 500;
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    display: inline-block;
+}
+/* 5 */
+.btn-5 {
+    background: black;
+    color: #fff;
+    line-height: 50px;
+    padding: 0;
+    border: none;
+  }
+  .btn-5:hover {
+    background: transparent;
+    color: #000;
+     box-shadow:
+     -7px -7px 20px 0px #fff9,
+     -4px -4px 5px 0px #fff9,
+     7px 7px 20px 0px #0002,
+     4px 4px 5px 0px #0001;
+  }
+  .btn-5:before,
+  .btn-5:after{
+    content:'';
+    position:absolute;
+    top:0;
+    right:0;
+    height:2px;
+    width:0;
+    background: #000;
+    transition:400ms ease all;
+  }
+  .btn-5:after{
+    right:inherit;
+    top:inherit;
+    left:0;
+    bottom:0;
+  }
+  .btn-5:hover:before,
+  .btn-5:hover:after{
+    width:100%;
+    transition:800ms ease all;
+  }
+
+/* FAQ section */
+.faq {
+    padding: 4rem 0;
+}
+
+.faq h2 {
+    font-size: 2rem;
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.faq-item {
+    background-color: #fff;
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-bottom: 1rem;
+}
+
+.faq-item h3 {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+}
+
+/* Footer */
+footer {
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    padding: 2rem 0;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .header ul {
+        display: none;
+    }
+
+    .hero h1 {
+        font-size: 2rem;
+    }
+
+    .hero p {
+        font-size: 1rem;
+    }
+}
+.image-div{
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    text-align: center;
+}
+.main-image{
+    /* width: 80%;
+    height: auto; */
+    display: block;
+    padding: 115px 8%;
+}
+.image-text{
+    position: absolute; /* 이미지 위에 배치 */
+    top: 50%; /* 중앙 정렬 */
+    left: 50%;
+    transform: translate(-50%, -50%); /* 정확한 중앙 배치 */
+    font-size: 100px; /* 원하는 크기로 조절 */
+    font-weight: bold;
+    color: white; /* 텍스트 색상 */
+    white-space: nowrap; /* 텍스트 줄 바꿈 방지 */
+    font-family: "Roboto";
+}

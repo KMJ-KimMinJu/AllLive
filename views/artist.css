@@ -1,0 +1,217 @@
+/* 초기화 및 기본 스타일 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Noto Sans KR', sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background-color: #ffffff;
+    margin: 0;
+    padding-top: 20px;
+}
+
+/* 컨테이너 스타일: 배너 높이에 맞춰 상단 여백 추가 */
+.container {
+    margin-top: 120px; /* 배너와 헤더 높이에 맞춘 여백 */
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    max-width: 1200px;
+    margin: 0 auto;
+    gap: 20px;
+}
+
+/* 헤더 스타일 */
+.header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    z-index: 1000;
+    transition: top 0.3s;
+}
+
+.header nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+}
+
+/* 메인 메뉴 스타일 */
+.main-menu {
+    display: flex;
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.main-menu > li {
+    position: relative;
+    margin-right: 20px;
+}
+
+.main-menu a {
+    text-decoration: none;
+    color: #333;
+    padding: 10px;
+    display: block;
+}
+/* 배너 스타일 */
+.banner {
+    position: fixed;
+    top: 30px; /* 헤더 높이에 따라 조정 */
+    left: 0;
+    right: 0;
+    background-color: #007bff;
+    color: white;
+    text-align: center;
+    padding: 5px;
+    z-index: 999;
+    transition: top 0.3s;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 1000px) {
+    .author-card {
+        width: calc(50% - 10px); /* 50% 너비로 조정 */
+    }
+}
+
+@media (max-width: 600px) {
+    .author-card {
+        width: 100%; /* 모바일 환경에서 100% 너비 */
+    }
+}
+
+#open-form-btn {
+    display: block;
+    margin: 20px auto;
+    padding: 10px 20px;
+    background-color: hsl(211, 100%, 50%);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.hero {
+    height: 30vh;
+    width: 85%;
+    margin: 0 auto;
+    opacity: 0;
+    transition: opacity 0.5s linear;
+    background: url('../images/busanisgood.png') no-repeat center center;
+    background-size: cover;
+    position: relative;
+    z-index: 1;
+}
+
+.hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.1);
+    z-index: 2;
+}
+
+.hero.visible {
+    opacity: 1;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 3;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: rgb(255, 255, 255);
+}
+
+.hero h1 {
+    font-size: 5rem;
+    margin-bottom: 1rem;
+}
+
+.hero-link {
+    text-decoration: none; /* 링크 밑줄 제거 */
+    color: inherit; /* 부모 요소의 색상을 따르도록 설정 */
+    display: block; /* `.hero` 섹션을 링크 전체로 만듭니다. */
+}
+
+.menu-nav{
+    width: 200px;
+    background-color: #eee;
+    border-right:1px solid #ddd;
+    position: fixed;
+    height: 100%;
+    text-align: center;
+}
+.menu-nav h1{
+    font-size: 20px;
+    padding: 20px;
+}
+.sidebar li{
+    list-style-type: none;
+}
+.sidebar li a{
+    height: 30px;
+    line-height: 30px;
+    display: block;
+    padding: 0 20px;
+    font-size: 16px;
+    color: #555;
+    text-decoration-line: none;
+    margin-bottom: 20px;
+}
+.sidebar li a:hover{
+    background-color: yellowgreen;
+    color:white;
+}
+.all-policy{
+    display: flex;
+    flex-direction: row;
+}
+
+.alllive-content{
+    padding: 30px;
+    margin-left: 350px;
+    margin-right: 230px;
+}
+
+.sidebar a.active{
+    background-color: blue;
+    color: white;
+    font-weight: bold;
+}
+
+.Content-Section{
+    display: none;
+    margin-left: 220px;
+    padding: 20px;
+}
+.Content-Section.active{
+    display: block;
+}
+
+#What, #back, #content, #future{
+    scroll-margin-top: 80px;
+}
+
+footer {
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    padding: 2rem 0;
+}
