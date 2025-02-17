@@ -33,6 +33,7 @@
       createMap(lat, lng);
       createMark(lat, lng);
 
+      // fetchDummyData();
       fetchDetailDummyData("남구");
 
     }
@@ -97,7 +98,6 @@
     // 마커
     function createMarkUrl(marker, district, name) {
       naver.maps.Event.addListener(marker, "click", function (e) {
-
         let address = encodeURIComponent(district + " " + name);
         console.log(address);
         let url = `https://map.naver.com/p/search/${address}`;
@@ -128,7 +128,7 @@
 
             let marker = createMark(datalat, datalng);
 
-            createMarkUrl(marker,district, name);
+            createMarkUrl(marker, district, name);
 
           } catch (error) {
             console.error("주소 변환 실패:", error);
@@ -164,9 +164,8 @@
 
             let marker = createMark(datalat, datalng);
 
-            naver.maps.Event.addListener(marker, "click", function () {
-              createMarkUrl(district, name);
-            });
+            createMarkUrl(marker, district, name);
+
 
           } catch (error) {
             console.error("위도·경도 변환 실패:", error);
