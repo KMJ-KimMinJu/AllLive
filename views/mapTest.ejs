@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+  <title>간단한 지도 표시하기</title>
+  <script type="text/javascript"
+    src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpClientId=<%= process.env.MAPCLIENTID %>"></script>
+  <script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
+
+  <!-- 렌더링 비동기 처리 코드 -->
+  <!-- <script type="text/javascript" src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpClientId=YOUR_CLIENT_ID&callback=CALLBACK_FUNCTION"></script> -->
+</head>
+
+<body>
+  <div id="map" style="width:100%;height:400px;"></div>
+
+  <script>
+    let map;
+
+    // 가져오기 성공
+    function getSuccess(position) {
+      // 위도
+      const lat = position.coords.latitude;
+      // 경도
+      const lng = position.coords.longitude;
+      // 위도 경도 오차(m)
+      const accuracy = Math.floor(position.coords.accuracy);
+
+      createMap(lat, lng);
+      createMark(lat, lng);
+
+      // fetchDummyData();
+      fetchDetailDummyData("남구");
+
+    }
+
+    // 가지오기 실패(거부)
+    function getError() {
+      alert('Geolocation Error');
+    }
+
+
+    // 현재 위치 가져오기
+    navigator.geolocation.getCurrentPosition(getSuccess, getError, {
+      enableHighAccuracy: true, // 고정밀 GPS 사용
+      timeout: 10000, // 최대 대기 시간 (10초)
+      maximumAge: 0 // 캐시된 위치 정보 사용 안 함
+    });
+
+    // 맵 생성
+    function createMap(lat, lng) {
+      var mapOptions = {
+        center: new naver.maps.LatLng(lat, lng),
+        zoom: 10
+      };
+
+      map = new naver.maps.Map('map', mapOptions);
+    }
+
+    // 지도에 표시하는 마커 생성
+    function createMark(lat, lng) {
+      let marker = new naver.maps.Marker({
+        map: map,
+        position: new naver.maps.LatLng(lat, lng)
+      });
+      return marker;
+    }
+
+    //address에 위도경도 변환할 주소를 넣기
+    async function getLatLng(address) {
+      const url = `http://localhost:3001/api/geocode?address=${encodeURIComponent(address)}`;
+
+      try {
+        const response = await fetch(url);
+        const data = await response.json();
+
+        console.log(data);
+
+        if (data.addresses && data.addresses.length > 0) {
+          const lat = data.addresses[0].y;
+          const lng = data.addresses[0].x;
+          console.log(`위도: ${lat}, 경도: ${lng}`);
+          return { lat, lng };
+        } else {
+          console.log("주소를 찾을 수 없습니다.");
+          return null;
+        }
+      } catch (error) {
+        console.error("Geocoding API 오류:", error);
+        return null;
+      }
+    }
+
+    // 마커
+    function createMarkUrl(marker, district, name) {
+      naver.maps.Event.addListener(marker, "click", function (e) {
+        let address = encodeURIComponent(district + " " + name);
+        console.log(address);
+        let url = `https://map.naver.com/p/search/${address}`;
+        window.open(url, "_blank"); // 새 탭에서 URL 열기
+      });
+    }
+
+    // 전체 더미데이터 불러와서 마커 찍기
+    async function fetchDummyData() {
+      try {
+        let response = await $.ajax({
+          url: "/map/list",
+          type: "GET",
+          cache: false,
+          dataType: "json"
+        });
+
+        for (let it of response) {
+          let district = it.district;
+          let name = it.name;
+
+          try {
+            let latLngResult = await getLatLng(it.address);
+            let datalat = latLngResult.lat;
+            let datalng = latLngResult.lng;
+
+            console.log(datalat + " " + datalng);
+
+            let marker = createMark(datalat, datalng);
+
+            createMarkUrl(marker, district, name);
+
+          } catch (error) {
+            console.error("주소 변환 실패:", error);
+          }
+        }
+      } catch (error) {
+        console.error("AJAX 요청 실패:", error);
+      }
+    }
+
+    // 특정 지역구 더미데이터 불러와서 마커 찍기
+    async function fetchDetailDummyData(district) {
+      try {
+        let response = await $.ajax({
+          url: `/map/list/detail?district=${encodeURIComponent(district)}`,
+          type: "GET",
+          cache: false,
+          dataType: "json"
+        });
+
+        console.log(response);
+
+        for (let it of response) {
+          let district = it.district;
+          let name = it.name;
+
+          try {
+            let latLngResult = await getLatLng(it.address);
+            let datalat = latLngResult.lat;
+            let datalng = latLngResult.lng;
+
+            console.log(`주소: ${it.address} → 위도: ${datalat}, 경도: ${datalng}`);
+
+            let marker = createMark(datalat, datalng);
+
+            createMarkUrl(marker, district, name);
+
+
+          } catch (error) {
+            console.error("위도·경도 변환 실패:", error);
+          }
+        }
+      } catch (error) {
+        console.error("AJAX 요청 실패:", error);
+      }
+    }
+
+  </script>
+
+  <script type="text/javascript"
+    src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpClientId=<%= process.env.MAPCLIENTID %>&callback=initMap"></script>
+
+</body>
+
+</html>
