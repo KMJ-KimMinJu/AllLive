@@ -95,9 +95,12 @@
     }
 
     // 마커
-    function createMarkUrl(district, name) {
-      naver.maps.Event.addListener("click", function (e) {
-        let url = "https://map.naver.com/p/search/" + encodeURIComponent(district + " " + name);
+    function createMarkUrl(marker, district, name) {
+      naver.maps.Event.addListener(marker, "click", function (e) {
+
+        let address = encodeURIComponent(district + " " + name);
+        console.log(address);
+        let url = `https://map.naver.com/p/search/${address}`;
         window.open(url, "_blank"); // 새 탭에서 URL 열기
       });
     }
@@ -125,9 +128,7 @@
 
             let marker = createMark(datalat, datalng);
 
-            naver.maps.Event.addListener(marker, "click", function () {
-              createMarkUrl(district, name);
-            });
+            createMarkUrl(marker,district, name);
 
           } catch (error) {
             console.error("주소 변환 실패:", error);
