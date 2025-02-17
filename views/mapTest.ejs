@@ -31,7 +31,7 @@
       const accuracy = Math.floor(position.coords.accuracy);
 
       createMap(lat, lng);
-      createMark(lat, lng);
+      createMyMark(lat, lng);
 
       // fetchDummyData();
       fetchDetailDummyData("남구");
@@ -61,11 +61,27 @@
       map = new naver.maps.Map('map', mapOptions);
     }
 
-    // 지도에 표시하는 마커 생성
+    // 지도에 표시하는 마커 생성 (일반)
     function createMark(lat, lng) {
       let marker = new naver.maps.Marker({
         map: map,
         position: new naver.maps.LatLng(lat, lng)
+      });
+      return marker;
+    }
+
+    // 지도에 표시하는 마커 생성 (내 위치)
+    function createMyMark(lat, lng) {
+      let marker = new naver.maps.Marker({
+        map: map,
+        position: new naver.maps.LatLng(lat, lng),
+        icon: {
+            content: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="35" viewBox="0 0 24 35" fill="none">
+                          <path fill="red" d="M12 0C5.37 0 0 5.37 0 12c0 7.5 12 23 12 23s12-15.5 12-23C24 5.37 18.63 0 12 0z"/>
+                          <circle cx="12" cy="12" r="5" fill="white"/>
+                      </svg>`,
+            anchor: new naver.maps.Point(12, 34)
+        }
       });
       return marker;
     }
