@@ -9,7 +9,7 @@
   <title>간단한 지도 표시하기</title>
   <script type="text/javascript"
     src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpClientId=<%= process.env.MAPCLIENTID %>"></script>
-
+  <script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
 
   <!-- 렌더링 비동기 처리 코드 -->
   <!-- <script type="text/javascript" src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpClientId=YOUR_CLIENT_ID&callback=CALLBACK_FUNCTION"></script> -->
@@ -33,6 +33,8 @@
       createMap(lat, lng);
       createMark(lat, lng);
 
+      fetchDummyData();
+
     }
 
     // 가지오기 실패(거부)
@@ -48,7 +50,7 @@
       maximumAge: 0 // 캐시된 위치 정보 사용 안 함
     });
 
-
+    // 맵 생성
     function createMap(lat, lng) {
       var mapOptions = {
         center: new naver.maps.LatLng(lat, lng),
@@ -58,13 +60,114 @@
       map = new naver.maps.Map('map', mapOptions);
     }
 
+    // 지도에 표시하는 마커 생성
     function createMark(lat, lng) {
       let marker = new naver.maps.Marker({
         map: map,
         position: new naver.maps.LatLng(lat, lng)
       });
+      return marker;
     }
 
+    //address에 위도경도 변환할 주소를 넣기
+    async function getLatLng(address) {
+      const url = `http://localhost:3001/api/geocode?address=${encodeURIComponent(address)}`;
+
+      try {
+        const response = await fetch(url);
+        const data = await response.json();
+
+        console.log(data);
+
+        if (data.addresses && data.addresses.length > 0) {
+          const lat = data.addresses[0].y;
+          const lng = data.addresses[0].x;
+          console.log(`위도: ${lat}, 경도: ${lng}`);
+          return { lat, lng };
+        } else {
+          console.log("주소를 찾을 수 없습니다.");
+          return null;
+        }
+      } catch (error) {
+        console.error("Geocoding API 오류:", error);
+        return null;
+      }
+    }
+
+    // 마커
+    function createMarkUrl(district, name) {
+      naver.maps.Event.addListener("click", function (e) {
+        let url = "https://map.naver.com/p/search/" + encodeURIComponent(district + " " + name);
+        window.open(url, "_blank"); // 새 탭에서 URL 열기
+      });
+    }
+
+    // 전체 더미데이터 불러와서 마커 찍기
+    async function fetchDummyData() {
+      try {
+        let response = await $.ajax({
+          url: "/map/list",
+          type: "GET",
+          cache: false,
+          dataType: "json"
+        });
+
+        for (let it of response) {
+          let district = it.district;
+          let name = it.name;
+
+          try {
+            let latLngResult = await getLatLng(it.address); // 비동기 처리
+            let datalat = latLngResult.lat;
+            let datalng = latLngResult.lng;
+
+            console.log(datalat + " " + datalng);
+
+            let marker = createMark(datalat, datalng);
+
+            naver.maps.Event.addListener(marker, "click", function () {
+              createMarkUrl(district, name);
+            });
+
+          } catch (error) {
+            console.error("주소 변환 실패:", error);
+          }
+        }
+      } catch (error) {
+        console.error("AJAX 요청 실패:", error);
+      }
+    }
+
+
+    // // 특정 지역구 더미데이터 불러와서 마커 찍기
+    // function fetchDetailDummyData(district) {
+    //   $.ajax({
+    //     url: "/map/list/detail",
+    //     type: "GET",
+    //     cache: false,
+    //     dataType: "json",
+    //     headers: {
+    //       'X-District': encodeURIComponent(district) // 한글 인코딩하여 헤더에 추가
+    //     },
+    //     success: function (data) {
+    //       console.log(data);
+
+    //       data.items.item.forEach(function (it) {
+    //         let district = it.district;
+    //         let name = it.name;
+
+    //         //위도 경도 바꾸는 함수 호출 후 값 저장
+    //         // let datalat = 0;
+    //         // let datalng = 0;
+
+    //         createMarkFromData(datalat, datalng);
+    //       });
+    //     },
+    //     error: function (request, status, error) {
+    //       console.error("AJAX 요청 실패:", error);
+    //     }
+    //   });
+    // }
 
 
   </script>
