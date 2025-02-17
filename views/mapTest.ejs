@@ -42,7 +42,12 @@
 
 
     // 현재 위치 가져오기
-    navigator.geolocation.getCurrentPosition(getSuccess, getError);
+    navigator.geolocation.getCurrentPosition(getSuccess, getError, {
+      enableHighAccuracy: true, // 고정밀 GPS 사용
+      timeout: 10000, // 최대 대기 시간 (10초)
+      maximumAge: 0 // 캐시된 위치 정보 사용 안 함
+    });
+
 
     function createMap(lat, lng) {
       var mapOptions = {
