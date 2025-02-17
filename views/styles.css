@@ -248,8 +248,7 @@ footer {
     text-align: center;
 }
 .main-image{
-    /* width: 80%;
-    height: auto; */
+    width: 100%;
     display: block;
     padding: 115px 8%;
 }
