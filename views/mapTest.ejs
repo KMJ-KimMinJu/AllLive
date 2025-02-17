@@ -33,7 +33,7 @@
       createMap(lat, lng);
       createMark(lat, lng);
 
-      fetchDummyData();
+      fetchDetailDummyData("남구");
 
     }
 
@@ -117,7 +117,7 @@
           let name = it.name;
 
           try {
-            let latLngResult = await getLatLng(it.address); // 비동기 처리
+            let latLngResult = await getLatLng(it.address);
             let datalat = latLngResult.lat;
             let datalng = latLngResult.lng;
 
@@ -138,37 +138,43 @@
       }
     }
 
+    // 특정 지역구 더미데이터 불러와서 마커 찍기
+    async function fetchDetailDummyData(district) {
+      try {
+        let response = await $.ajax({
+          url: `/map/list/detail?district=${encodeURIComponent(district)}`,
+          type: "GET",
+          cache: false,
+          dataType: "json"
+        });
 
-    // // 특정 지역구 더미데이터 불러와서 마커 찍기
-    // function fetchDetailDummyData(district) {
-    //   $.ajax({
-    //     url: "/map/list/detail",
-    //     type: "GET",
-    //     cache: false,
-    //     dataType: "json",
-    //     headers: {
-    //       'X-District': encodeURIComponent(district) // 한글 인코딩하여 헤더에 추가
-    //     },
-    //     success: function (data) {
-    //       console.log(data);
+        console.log(response);
 
-    //       data.items.item.forEach(function (it) {
-    //         let district = it.district;
-    //         let name = it.name;
+        for (let it of response) {
+          let district = it.district;
+          let name = it.name;
 
-    //         //위도 경도 바꾸는 함수 호출 후 값 저장
-    //         // let datalat = 0;
-    //         // let datalng = 0;
+          try {
+            let latLngResult = await getLatLng(it.address);
+            let datalat = latLngResult.lat;
+            let datalng = latLngResult.lng;
 
-    //         createMarkFromData(datalat, datalng);
-    //       });
-    //     },
-    //     error: function (request, status, error) {
-    //       console.error("AJAX 요청 실패:", error);
-    //     }
-    //   });
-    // }
+            console.log(`주소: ${it.address} → 위도: ${datalat}, 경도: ${datalng}`);
 
+            let marker = createMark(datalat, datalng);
+
+            naver.maps.Event.addListener(marker, "click", function () {
+              createMarkUrl(district, name);
+            });
+
+          } catch (error) {
+            console.error("위도·경도 변환 실패:", error);
+          }
+        }
+      } catch (error) {
+        console.error("AJAX 요청 실패:", error);
+      }
+    }
 
   </script>
 

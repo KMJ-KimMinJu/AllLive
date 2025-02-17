@@ -47,12 +47,6 @@ app.get('/api/geocode', async (req, res) => {
     }
 });
 
-//
-app.get("/map/list", (req, res) => {
-    res.status(200).send(dummyData);
-});
-
-
 // 서버 실행
 app.listen(port, () => {
     console.log(`서버가 실행 중입니다. http://localhost:${port}`);
@@ -70,7 +64,7 @@ app.get("/map/list", (req, res) => {
 
 
 app.get("/map/list/detail", (req, res) => {
-    const district = req.get('district');
+    const district = decodeURIComponent(req.query.district);
 
     if (!district) {
         return res.status(400).json({ error: "district 값을 제공해야 합니다." });
@@ -79,9 +73,9 @@ app.get("/map/list/detail", (req, res) => {
     // 필터링하여 해당 district에 속하는 데이터만 반환
     const filteredList = dummyData.filter(item => item.district == district);
 
-    
+
     if (filteredList.length === 0) {
-        return res.status(404).json({ message: "해당 지역의 데이터가 없습니다."});
+        return res.status(404).json({ message: "해당 지역의 데이터가 없습니다." });
     }
 
     res.send(filteredList);
